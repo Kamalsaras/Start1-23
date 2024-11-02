@@ -1,0 +1,402 @@
+--start32
+-- corrector
+
+-- Define valid commands
+local validCommands = {
+    ";playerlist",
+    ";openmenu",
+    ";closemenu",
+    ";tp",
+    ";list",
+    ";execute",
+    ";stats",
+    ";info",
+    ";serverage",
+    ";esp",
+    ";esp off",
+    ";bring",
+    ";brall",
+    ";undobrall",
+    ";jumpboost",
+    ";bridge",
+    ";bridgeclear",
+    ";lookitem",
+    ";checkinv",
+    ";flashstep on",
+    ";flashstep off",
+    ";object esp on",
+    ";object esp off",
+    ";wall on",
+    ";wall off",
+    ";spectate",
+    ";spectate end",
+    ";clone",
+    ";set point",
+    ";teleport to point",
+    ";walkthrough",
+    ";walkthrough off",
+    ";scale",
+    ";disablescale",
+    ";spin",
+    ";unspin",
+    ";fling",
+    ";noclip",
+    ";clip",
+    ";flip",
+    ";swim",
+    ";unswim",
+    ";teleport",
+    ";fly",
+    ";fly",
+    ";unfly",
+    ";hop",
+    ";rejoin",
+    ";kickself",
+    ";glitch",
+    ";closeglitch",
+    ";unglitch",
+    ";revolve",
+    ";unrevolve",
+    ";searchobject",
+    ";follow",
+    ";unfollow",
+    ";reset",
+    ";antilag",
+    ";roleinfo",
+    ";espnonvisibleobj",
+    ";envo",
+    ";offenvo",
+    ";light",
+    ";setp",
+    ";tpp",
+    ";objecttp",
+    ";jumpscare",
+    ";savegame",
+    ";gravity",
+    ";night",
+    ";day",
+    ";coordinates",
+    ";offcoordinates",
+    ";fill",
+    ";fov",
+    ";fovreset",
+    ";xray on",
+    ";xray off",
+    ";jump",
+    ";speed",
+    ";health",
+    ";resetstats",
+    ";hitbox",
+    ";hitboxall",
+    ";glitch2",
+    ";unglitch2",
+    ";bringobj",
+    ";pt",
+    ";pt off",
+    ";fog",
+    ";fogclear",
+    ";fogcolor",
+    ";shake",
+    ";stopshake",
+    ";donate",
+    ";commands",
+    ";joinus",
+    ";wallwalk on",
+    ";wallwalk off"
+}
+
+-- Function to create a notification
+local function createNotification(message)
+    local player = game.Players.LocalPlayer
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Parent = player:WaitForChild("PlayerGui")
+
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(0.3, 0, 0.1, 0)
+    frame.Position = UDim2.new(0.68, 0, 1, 0)
+    frame.BackgroundTransparency = 0.3
+    frame.BorderSizePixel = 0
+    frame.Parent = screenGui
+
+    local uiGradient = Instance.new("UIGradient")
+    uiGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0.0, Color3.fromRGB(28, 28, 28)),
+        ColorSequenceKeypoint.new(1.0, Color3.fromRGB(54, 54, 54))
+    }
+    uiGradient.Rotation = 45
+    uiGradient.Parent = frame
+
+    local border = Instance.new("Frame")
+    border.Size = UDim2.new(1, 4, 1, 4)
+    border.Position = UDim2.new(0, -2, 0, -2)
+    border.ZIndex = frame.ZIndex - 1
+    border.Parent = frame
+
+    local borderGradient = Instance.new("UIGradient")
+    borderGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0.0, Color3.fromRGB(200, 200, 255)),
+        ColorSequenceKeypoint.new(1.0, Color3.fromRGB(160, 0, 0))
+    }
+    borderGradient.Rotation = 45
+    borderGradient.Parent = border
+
+    local topBar = Instance.new("Frame")
+    topBar.Size = UDim2.new(1, 0, 0.2, 0)
+    topBar.BackgroundTransparency = 0.3
+    topBar.BorderSizePixel = 0
+    topBar.Parent = frame
+
+    local closeButton = Instance.new("TextButton")
+    closeButton.Text = "×"
+    closeButton.Font = Enum.Font.SourceSansBold
+    closeButton.TextSize = 24
+    closeButton.TextColor3 = Color3.new(1, 1, 1)
+    closeButton.BackgroundTransparency = 1
+    closeButton.Size = UDim2.new(0.1, 0, 1, 0)
+    closeButton.Position = UDim2.new(0.9, 0, 0, 0)
+    closeButton.Parent = topBar
+
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Size = UDim2.new(0.9, 0, 0.8, 0)
+    textLabel.Position = UDim2.new(0.05, 0, 0.2, 0)
+    textLabel.BackgroundTransparency = 1
+    textLabel.Text = message
+    textLabel.Font = Enum.Font.Gotham
+    textLabel.TextSize = 20
+    textLabel.TextColor3 = Color3.new(1, 1, 1)
+    textLabel.TextWrapped = true
+    textLabel.TextYAlignment = Enum.TextYAlignment.Center
+    textLabel.Parent = frame
+
+    local appearanceSound = Instance.new("Sound")
+    appearanceSound.SoundId = "rbxassetid://6026984224"
+    appearanceSound.Volume = 1
+    appearanceSound.Parent = screenGui
+    appearanceSound:Play()
+
+    local closeSound = Instance.new("Sound")
+    closeSound.SoundId = "rbxassetid://6895079853"
+    closeSound.Volume = 1
+    closeSound.Parent = screenGui
+
+    frame:TweenPosition(
+        UDim2.new(0.68, 0, 0.85, 0),
+        Enum.EasingDirection.Out,
+        Enum.EasingStyle.Quad,
+        0.5,
+        true
+    )
+
+    local function fadeOutAndDestroy()
+        for i = 1, 10 do
+            frame.BackgroundTransparency = frame.BackgroundTransparency + 0.08
+            border.BackgroundTransparency = border.BackgroundTransparency + 0.08
+            textLabel.TextTransparency = textLabel.TextTransparency + 0.08
+            topBar.BackgroundTransparency = topBar.BackgroundTransparency + 0.08
+            closeButton.TextTransparency = closeButton.TextTransparency + 0.08
+            wait(0.05)
+        end
+        screenGui:Destroy()
+    end
+
+    closeButton.MouseButton1Click:Connect(function()
+        closeSound:Play()
+        fadeOutAndDestroy()
+    end)
+
+    delay(5, fadeOutAndDestroy)
+end
+
+-- Function to handle chat input
+local function onChatMessage(message)
+    if message:sub(1, 1) == ";" then
+        local command = message:match(";%S+")
+        if command then
+            local found = false
+            for _, validCommand in ipairs(validCommands) do
+                if command == validCommand then
+                    found = true
+                    break
+                end
+            end
+
+            if not found then
+                -- Check for closest command suggestion
+                local closestCommand = nil
+                local closestDistance = math.huge
+
+                local function levenshtein(a, b)
+                    local m = #a
+                    local n = #b
+                    local d = {}
+
+                    for i = 0, m do
+                        d[i] = {}
+                        d[i][0] = i
+                    end
+
+                    for j = 0, n do
+                        d[0][j] = j
+                    end
+
+                    for i = 1, m do
+                        for j = 1, n do
+                            local cost = a:sub(i, i) == b:sub(j, j) and 0 or 1
+                            d[i][j] = math.min(
+                                d[i - 1][j] + 1,
+                                d[i][j - 1] + 1,
+                                d[i - 1][j - 1] + cost
+                            )
+                        end
+                    end
+
+                    return d[m][n]
+                end
+
+                for _, validCommand in ipairs(validCommands) do
+                    local distance = levenshtein(command:sub(2), validCommand:sub(2))  -- Compare without ';'
+                    if distance < closestDistance then
+                        closestDistance = distance
+                        closestCommand = validCommand
+                    end
+                end
+
+                if closestCommand and closestDistance < 4 then  -- Adjust this threshold if needed
+                    createNotification("Did you mean " .. closestCommand .. "?")
+                else
+                    createNotification("Sorry, we don't have " .. command .. " command.")
+                end
+            end
+        end
+    end
+end
+
+-- Connect chat message event
+game.Players.LocalPlayer.Chatted:Connect(onChatMessage)
+
+--start33
+--CommandNotificationOnRespawn
+
+-- LocalScript
+local function createNotification()
+    -- Create the ScreenGui
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+    -- Create the Frame for the notification
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(0.3, 0, 0.1, 0)  -- Width: 30%, Height: 10% of screen size
+    frame.Position = UDim2.new(0.68, 0, 1, 0)  -- Start off-screen, slightly away from the right edge
+    frame.BackgroundTransparency = 0
+    frame.BorderSizePixel = 0
+    frame.Parent = screenGui
+
+    -- Create the UIGradient for the frame background
+    local uiGradient = Instance.new("UIGradient")
+    uiGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0.0, Color3.fromRGB(28, 28, 28)),  -- Dark Blue at the top
+        ColorSequenceKeypoint.new(1.0, Color3.fromRGB(54, 54, 54))   -- Dark Pink at the bottom
+    }
+    uiGradient.Rotation = 45  -- Diagonal gradient
+    uiGradient.Parent = frame
+
+    -- Create the gradient border
+    local border = Instance.new("Frame")
+    border.Size = UDim2.new(1, 4, 1, 4)  -- Extend border beyond frame
+    border.Position = UDim2.new(0, -2, 0, -2)  -- Center border around frame
+    border.ZIndex = frame.ZIndex - 1
+    border.Parent = frame
+
+    local borderGradient = Instance.new("UIGradient")
+    borderGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0.0, Color3.fromRGB(200, 200, 255)),  -- Light Blue at the top
+        ColorSequenceKeypoint.new(1.0, Color3.fromRGB(160, 0, 0))   -- Light Pink at the bottom
+    }
+    borderGradient.Rotation = 45  -- Diagonal gradient
+    borderGradient.Parent = border
+
+    -- Create the top bar for the close button
+    local topBar = Instance.new("Frame")
+    topBar.Size = UDim2.new(1, 0, 0.2, 0)  -- Top bar covering 20% height
+    topBar.BackgroundTransparency = 0.3
+    topBar.BorderSizePixel = 0
+    topBar.Parent = frame
+
+    -- Create the close (×) button
+    local closeButton = Instance.new("TextButton")
+    closeButton.Text = "×"
+    closeButton.Font = Enum.Font.SourceSansBold
+    closeButton.TextSize = 24
+    closeButton.TextColor3 = Color3.new(1, 1, 1)  -- White text
+    closeButton.BackgroundTransparency = 1
+    closeButton.Size = UDim2.new(0.1, 0, 1, 0)  -- Small button
+    closeButton.Position = UDim2.new(0.9, 0, 0, 0)  -- Positioned to the far right of the top bar
+    closeButton.Parent = topBar
+
+    -- Create the TextLabel for the notification text
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Size = UDim2.new(0.9, 0, 0.8, 0)  -- Cover remaining 80% height below the top bar, leave space for padding
+    textLabel.Position = UDim2.new(0.05, 0, 0.2, 0)  -- Slight padding from left side
+    textLabel.BackgroundTransparency = 1
+    textLabel.Text = "Type ;commands to view the Commands list."
+    textLabel.Font = Enum.Font.Gotham -- Updated to a modern font
+    textLabel.TextSize = 20
+    textLabel.TextColor3 = Color3.new(1, 1, 1)  -- White text
+    textLabel.TextWrapped = true  -- Enable text wrapping
+    textLabel.TextYAlignment = Enum.TextYAlignment.Center  -- Align text to center
+    textLabel.Parent = frame
+
+    -- Create the sound effect for notification appearance
+    local appearanceSound = Instance.new("Sound")
+    appearanceSound.SoundId = "rbxassetid://6026984224"
+    appearanceSound.Volume = 1
+    appearanceSound.Parent = screenGui
+    appearanceSound:Play()
+
+    -- Create the sound effect for close button
+    local closeSound = Instance.new("Sound")
+    closeSound.SoundId = "rbxassetid://6895079853"
+    closeSound.Volume = 1
+    closeSound.Parent = screenGui
+
+    -- Opening animation: Move the frame up from off-screen to its final position
+    frame:TweenPosition(
+        UDim2.new(0.68, 0, 0.85, 0),  -- Final position at the bottom right, closer to the right edge
+        Enum.EasingDirection.Out,
+        Enum.EasingStyle.Quad,
+        0.5,  -- Time it takes to move up
+        true
+    )
+
+    -- Close button functionality with fade-out animation
+    local function fadeOutAndDestroy()
+        for i = 1, 10 do
+            frame.BackgroundTransparency = frame.BackgroundTransparency + 0.08
+            border.BackgroundTransparency = border.BackgroundTransparency + 0.08  -- Fade the border as well
+            textLabel.TextTransparency = textLabel.TextTransparency + 0.08
+            topBar.BackgroundTransparency = topBar.BackgroundTransparency + 0.08
+            closeButton.TextTransparency = closeButton.TextTransparency + 0.08
+            wait(0.05)
+        end
+        screenGui:Destroy()
+    end
+
+    -- Trigger fade-out on close button click and play close sound
+    closeButton.MouseButton1Click:Connect(function()
+        closeSound:Play()
+        fadeOutAndDestroy()
+    end)
+
+    -- Wait for the notification to be displayed for 30 seconds, then auto-close
+    delay(5, fadeOutAndDestroy)
+end
+
+-- Trigger notification on player reset or respawn
+local player = game.Players.LocalPlayer
+player.CharacterAdded:Connect(function()
+    wait(1)  -- Delay to ensure character is fully loaded
+    createNotification()
+end)
+
+-start34
+print("Quantum has loaded successfully.")
